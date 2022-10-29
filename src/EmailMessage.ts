@@ -35,6 +35,9 @@ export class EmailMessage {
     // the multipart boundary
     private _boundary: string;
 
+    // custom headers
+    private _headers: { [k: string]: string } = {};
+
 
     /**
      * Creates an email message
@@ -55,6 +58,11 @@ export class EmailMessage {
      */
     get destinations() {
         return this._to.concat(this._cc).concat(this._bcc);
+    }
+
+    header(key: string, val: string) {
+        this._headers[key] = val;
+        return this;
     }
 
     /**
@@ -183,7 +191,7 @@ export class EmailMessage {
         parts.push('--' + sub_boundary + '--');
         parts.push('');
 
-        if(this._attachments.length) {
+        if (this._attachments.length) {
 
             for (let i = 0; i < this._attachments.length; i++) {
                 const element = this._attachments[i];
@@ -239,11 +247,20 @@ export class EmailMessage {
         // content type set to multipart/mixed
         header_parts.push('Content-Type: multipart/mixed;');
 
+        // add custom headers
+        for (let k in this._headers) {
+            if (this._headers[k]) {
+                header_parts.push(`${k}: ${this._headers[k]}`);
+            }
+        }
+
         // boundary
         header_parts.push(` boundary="${this._boundary}"`);
 
         // Mime version
         header_parts.push('MIME-Version: 1.0');
+
+
 
         // new line
         header_parts.push('');
