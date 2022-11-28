@@ -247,16 +247,17 @@ export class EmailMessage {
         // content type set to multipart/mixed
         header_parts.push('Content-Type: multipart/mixed;');
 
-        // add custom headers
-        for (let k in this._headers) {
-            if (this._headers[k]) {
-                header_parts.push(`${k}: ${this._headers[k]}`);
-            }
-        }
-
         // boundary
         header_parts.push(` boundary="${this._boundary}"`);
 
+        // add custom headers
+        for (let k in this._headers) {
+            if (this._headers[k]) {
+                header_parts.push(`${k}: ${this._headers[k]};`);
+            }
+        }
+
+        
         // Mime version
         header_parts.push('MIME-Version: 1.0');
 
